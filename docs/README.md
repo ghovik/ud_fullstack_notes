@@ -1,3 +1,3 @@
-# Headline
+# Full Stack
 
-> An awesome project.
+> Udacity Full Stack Developer Nano-degree notes
