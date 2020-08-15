@@ -178,3 +178,75 @@ query.count() # return number of records
 [Click here](https://video.udacity-data.com/topher/2019/August/5d5a52af_query-cheat-sheet/query-cheat-sheet.pdf) to access a **cheat sheet** of handy SQLAlchemy Query methods to use.
 
 Handy resources：[Docs for the SQLAlchemy Query API](https://docs.sqlalchemy.org/en/latest/orm/query.html)
+
+
+
+### SQLAlchemy Object Lifecycle
+
+<iframe width="770" height="433" src="https://www.youtube.com/embed/1zMqtV3Kv-0" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+#### Flush
+
+A flush takes pending changes and translates them into SQL commands, ready to be committed to the database.
+
+
+
+<iframe width="770" height="433" src="https://www.youtube.com/embed/GGGWgRLC80s" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+- A **flush** takes pending changes, and translates them into commands *ready* to be committed. It occurs:
+- when you call `Query`. Or
+- on `db.session.commit()`
+
+
+
+## 5 - Build a CRUD App with SQLAlchemy Part 1
+
+### Introduction
+
+<iframe width="770" height="433" src="https://www.youtube.com/embed/EKbYqJTP0CA" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="770" height="433" src="https://www.youtube.com/embed/MZ-4WZT_Qno" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+### Create a Dummy ToDo App
+
+<iframe width="770" height="433" src="https://www.youtube.com/embed/wM4cUqAM-PE" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+By default, Flask looks for all your templates in a folder "templates" in your project dir.
+
+
+
+Jinja2 is able to convert non-html data to html files. Example:
+
+```python
+from flask import Flask
+from flask.templating import render_template
+
+app = Flask(__name__)
+
+@app.route("/")
+def index():
+    return render_template(
+        "index.html", 
+        # data can be used in html file.
+        data=[{"description": f"Todo {i}"} for i in range(1, 4)])
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", debug=True, port=3000)
+```
+
+```html
+<html>
+    <head>
+        <title>ToDo App</title>
+    </head>
+    <body>
+        <ul>
+            <!-- data from python code -->
+            {% for d in data %}
+            <li>{{ d.description }}</li>
+            {% endfor %}
+        </ul>
+    </body>
+</html>
+```
+
