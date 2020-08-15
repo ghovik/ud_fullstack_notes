@@ -18,7 +18,13 @@ class Person(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(), nullable=False)
 
-db.create_all()
+    # add a wrapper that is easy for debugging
+    # so every time we query this time, the result will be
+    # printed automatically
+    def __repr__(self):
+        return f"<Person {self.id}, name: {self.name}>"
+
+db.create_all() # create all defined tables if not exist
 
 
 if __name__ == "__main__":
