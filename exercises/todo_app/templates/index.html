@@ -3,10 +3,44 @@
         <title>ToDo App</title>
     </head>
     <body>
-        <ul>
+        <!-- <form id="form" method="post" action="/todo/create">
+        post request for traditionall html -->
+        <form id="form">
+            <label for="todo">todo:</label>
+            <input id="todo" type="text" name="description">
+            <input type="submit", value="submit">
+        </form>
+        <div id="error" class="hidden">Something Wrong!</div>
+        <ul id="todoList">
             {% for d in data %}
             <li>{{ d.description }}</li>
             {% endfor %}
         </ul>
+        <script>
+            document.getElementById("form").onsubmit = function(e) {
+                // prevent the submit button to submit and refresh the page
+                e.preventDefault();
+                fetch("/todo/create", {
+                    method: "POST",
+                    body: JSON.stringify({
+                        "description": document.getElementById("todo").value
+                    }),
+                    headers: {"Content-Type": "application/json"}                    
+                })
+                .then(function(response) {
+                    return response.json();
+                })
+                .then(function(responseJson) {
+                    console.log(responseJson)
+                    const liItem = document.createElement("LI");
+                    liItem.innerHTML = responseJson["description"];
+                    document.getElementById("todoList").append(liItem);
+                })
+                .catch(function() {
+                    // remove "error" class name so that it is no hidden anymore
+                    document.getElementById("error").className="";
+                })
+            }
+        </script>
     </body>
 </html>
