@@ -694,3 +694,237 @@ todos=# select * from todo;
 
 - https://alembic.sqlalchemy.org/en/latest/
 - https://flask-migrate.readthedocs.io/en/latest/
+
+
+
+## 7 - Build a CRUD App with SQLAlchemy ORM - Part 2
+
+- Implementing update functionality: update a todo item's completed state
+- Implementing delete functionality: remove a todo item
+- Model relationships between objects in SQL and SQLAlchemy
+  - Setting up Foreign Key constraints
+- Building CRUD on Lists of To-Do items
+- Handling the special case of modeling many-to-many relationships
+
+
+
+### Updating a Todo Item
+
+<iframe width="770" height="433" src="https://www.youtube.com/embed/0Xm2VnXRzVk" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+An **update** involves setting the attributes of an existing object in the database.
+
+In SQL:
+
+```sql
+UPDATE table_name
+SET column1 = value1, column2 = value2, ...
+WHERE condition;
+```
+
+In SQLAlchemy ORM:
+
+```python
+user = User.query.get(some_id)
+user.name = 'Some new name'
+db.session.commit()
+```
+
+<iframe width="770" height="433" src="https://www.youtube.com/embed/r-6MkZlDJ_8" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+[Jinja Docs `if`](http://jinja.pocoo.org/docs/2.10/templates/#if)
+
+
+
+#### Modifying the view in `index.html` to show checkboxes
+
+<iframe width="770" height="433" src="https://www.youtube.com/embed/HAZwYPOZf3s" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+
+
+#### Having the checkboxes send off update (`POST`) requests
+
+<iframe width="770" height="433" src="https://www.youtube.com/embed/20_s84r0j2Q" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+
+
+#### Defining the handler for the route
+
+<iframe width="770" height="433" src="https://www.youtube.com/embed/fhtBPu5yGLw" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+
+
+#### Fixing the ordering
+
+<iframe width="770" height="433" src="https://www.youtube.com/embed/V2y8J81UEqw" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+
+
+### Deleting a todo item
+
+<iframe width="770" height="433" src="https://www.youtube.com/embed/23WUhMIaP9c" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+In SQL:
+
+```
+DELETE FROM table_name
+WHERE condition;
+```
+
+In SQLAlchemy ORM:
+
+```py
+todo = Todo.query.get(todo_id) 
+db.session.delete(todo) # or...
+Todo.query.filter_by(id=todo_id).delete()
+db.session.commit()
+```
+
+#### Steps we'll implement:
+
+- Show a delete button for each TODO item
+- Pressing the delete button sends a request that includes which to-do item to delete
+- The controller takes the user input, and notifies the models to delete the To-Do object by ID
+- On successful deletion by the models, the controller should notify the view to refresh the page and redirect to our homepage, showing a fresh fetch of all To-Do items to now exclude the removed item.
+
+#### Using the DELETE method
+
+Requests that delete objects should use the method `DELETE`, as opposed to `POST`, `GET`, etc. when sending requests to the server.
+
+<iframe width="770" height="433" src="https://www.youtube.com/embed/a43M8qRSGXE" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+### Introduction: Modeling Relationships
+
+<iframe width="770" height="433" src="https://www.youtube.com/embed/Fjb8gYBA170" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+### Review: Relationships & Joins
+
+<iframe width="770" height="433" src="https://www.youtube.com/embed/RgOXSZhYVe4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+A foreign key is stored in a child table, which retrieves the primary key in the parent table. A child object belongs to a parent object through the foreign key that's stored on the child table.
+
+behicles: Child																						drivers: Parent
+
+| id   | make     | model  | year | driver_id | id   | name   | state |
+| ---- | -------- | ------ | ---- | --------- | ---- | ------ | ----- |
+| 1    | Nissan   | Altima | 2018 | 3         | 1    | Amy    | NE    |
+| 2    | Toyota   | Camry  | 2018 | 4         | 2    | Bob    | NE    |
+| 3    | Kawasaki | Ninja  | 2018 | 3         | 3    | Sarah  | NE    |
+| 4    | Honda    | Civic  | 2018 | 2         | 4    | Aditya | NE    |
+
+```sql
+SELECT make, model, year FROM behicle
+JOIN drivers
+ON vehicles.driver_id = drivers.id
+WHERE drivers.name = 'Sarah';
+```
+
+### db.relationship
+
+<iframe width="770" height="433" src="https://www.youtube.com/embed/WULi0shD61Q" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+![img](https://video.udacity-data.com/topher/2019/August/5d5f5ed0_screen-shot-2019-08-22-at-8.34.29-pm/screen-shot-2019-08-22-at-8.34.29-pm.png)
+
+### Configuring Relationships
+
+<iframe width="770" height="433" src="https://www.youtube.com/embed/QATpsBELc8s" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+#### Lazy loading vs. Eager loading
+
+<iframe width="770" height="433" src="https://www.youtube.com/embed/oq-Wqp_BSps" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+See [the SQLAlchemy Docs on Relationship Loading Techniques](https://docs.sqlalchemy.org/en/latest/orm/loading_relationships.html) for more loading options.
+
+#### Other relationship options: `collection_class` and `cascade`
+
+<iframe width="770" height="433" src="https://www.youtube.com/embed/qywsiQi6lvk" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+[SQLALchemy ORM Relationship Docs](https://docs.sqlalchemy.org/en/13/orm/relationship_api.html#sqlalchemy.orm.relationship)
+
+### Setting up the Foreign Key Constraint
+
+<iframe width="770" height="433" src="https://www.youtube.com/embed/ovI5b7j-Oqc" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+- `db.relationship` does *not* set up foreign key constraints for you. We need to add a column, `some_parent_id`, on the **child** model that has a foreign key constraint
+- Whereas we set `db.relationship` on the **parent** model, we set the foreign key constraint on the **child** model.
+- A foreign key constraint prefers **referential integrity** from one table to another, by ensuring that the foreign key column always maps a primary key in the foreign table.
+
+![img](https://video.udacity-data.com/topher/2019/August/5d5f62cd_screen-shot-2019-08-22-at-8.51.27-pm/screen-shot-2019-08-22-at-8.51.27-pm.png)
+
+#### `db.ForeignKey` question
+
+<iframe width="770" height="433" src="https://www.youtube.com/embed/oVuHm3rNxKI" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+##### `db.ForeignKey`
+
+- Option in db.column to specify a foreign key constraint, referring to the primary key of the other table / model
+- Gets defined on the Child model
+
+![img](https://video.udacity-data.com/topher/2019/August/5d5faa19_screen-shot-2019-08-23-at-1.55.35-am/screen-shot-2019-08-23-at-1.55.35-am.png)
+
+<iframe width="770" height="433" src="https://www.youtube.com/embed/XXy8hL0d30c" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="770" height="433" src="https://www.youtube.com/embed/Wd9zyi8dCGM" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+### One-to-Many Relationship Setup
+
+ ["The 3 Types of Relationships in Database Design" by Database.Guide -- click here](https://database.guide/the-3-types-of-relationships-in-database-design/)
+
+#### Creating the `TodoList` model and adding the foreign key to the child `Todo` model
+
+<iframe width="770" height="433" src="https://www.youtube.com/embed/5Bl9RtsEtAY" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+#### Overall steps taken
+
+- Modified our Todo model to (temporarily) allow null values in `list_id`:
+
+  ```py
+  list_id = db.Column(db.Integer, db.ForeignKey('todolists.id'), nullable=True)
+  ```
+
+- Ran the migration, allowing `list_id` to be null
+
+Then using psql (or any other Postgres client),
+
+- Populated our database with a default list ("Uncategorized") to add all currently existing Todo items to
+- Associated existing to-do items with the "Uncategorized" list with ID 1, setting todo.list_id = 1. We could have also done this in a migration rather than using psql; either works.
+- Set `nullable=False` on the `list_id` column
+- Ran `flask db migrate` to generate a migration file for updating the nullability constraint
+- Ran `flask db upgrade` to apply the migration
+
+#### Example Terminal Output
+
+```bash
+macbook:~ amy$ psql todoapp
+psql (11.3, server 10.10)
+Type "help" for help.
+todoapp=# \dt
+            List of relations
+ Schema |      Name       | Type  | Owner
+--------+-----------------+-------+-------
+ public | alembic_version | table | amy
+ public | todolists       | table | amy
+ public | todos           | table | amy
+(3 rows)
+
+todoapp=# insert into todolists (name) values ('Uncategorized');
+INSERT 0 1
+todoapp=# update todos set list_id = 1 where list_id is null;
+UPDATE 6
+todoapp=# select * from todos;
+ id | description  | completed | list_id
+----+--------------+-----------+---------
+  5 | Do homework  | f         |       1
+  7 | Do thing 3   | f         |       1
+ 21 | thing 17     | t         |       1
+  6 | Do a thing   | t         |       1
+  8 | Do a thing 4 | t         |       1
+  9 | Thing 5      | f         |       1
+(6 rows)
+
+todoapp=# \q
+```
+
+### CRUD on List of To-Dos
+
+<iframe width="770" height="433" src="https://www.youtube.com/embed/Q2JlOnmxVcE" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

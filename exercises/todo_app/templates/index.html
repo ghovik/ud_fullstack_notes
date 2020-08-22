@@ -1,6 +1,16 @@
 <html>
     <head>
         <title>ToDo App</title>
+        <style>
+            .hidden{
+                display: none;
+            }
+            ul {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+            }
+        </style>
     </head>
     <body>
         <!-- <form id="form" method="post" action="/todo/create">
@@ -13,10 +23,66 @@
         <div id="error" class="hidden">Something Wrong!</div>
         <ul id="todoList">
             {% for d in data %}
-            <li>{{ d.description }}</li>
+            <li>
+                <!-- add a x button -->
+                <button class="deleted" data-id="{{ d.id }}">&cross;</button>
+                <!--    define a clss "checked" 
+                        use double brackets in Jinja
+                -->
+                <input class="checked" data-id="{{ d.id }}" type="checkbox" {% if d.completed %} checked {% endif %} >
+                {{ d.description }}
+            </li>
             {% endfor %}
         </ul>
         <script>
+            // Delete a todo item
+            const deleteButtons = document.querySelectorAll(".deleted");
+            deleteButtons.forEach(function(aButton) {
+                aButton.onclick = function(e) {
+                    const todoID = e.target.dataset["id"];
+                    console.log("id", todoID, "clicked", e);
+                    fetch("/todo/delete/" + todoID, {
+                        method: "DELETE",
+                    })
+                    .then(function(response) {
+                        return response.json();
+                    })
+                    .then(function(responseJson) {
+                        alert(responseJson);
+                        // if (responseJson) {
+                        //     window.location.href = "/";
+                        // }
+                    })
+                    .catch(function() {
+                    // remove "error" class name so that it is no hidden anymore
+                    document.getElementById("error").className="";
+                    })
+                };
+            });
+            // Update the todo item (check/un-check)
+            // querySelectorAll returns an array-like obj
+            const checkboxes = document.querySelectorAll(".checked");
+            checkboxes.forEach(function(checkbox){
+                checkbox.onchange = function(e) {
+                    // console.log("event", e);
+                    const isCompleted = e.target.checked;
+                    console.log("event", e)
+                    const todoID = e.target.dataset["id"];
+                    console.log("id", todoID);
+                    fetch("/todo/" + todoID + "/set-completed", {
+                        method: "POST",
+                        body: JSON.stringify({
+                            "completed": isCompleted
+                        }),
+                        headers: {"Content-Type": "application/json"}
+                    }) 
+                    .catch(function() {
+                    // remove "error" class name so that it is no hidden anymore
+                    document.getElementById("error").className="";
+                    })
+                };
+            });
+            // Create new todo item
             document.getElementById("form").onsubmit = function(e) {
                 // prevent the submit button to submit and refresh the page
                 e.preventDefault();
@@ -25,7 +91,7 @@
                     body: JSON.stringify({
                         "description": document.getElementById("todo").value
                     }),
-                    headers: {"Content-Type": "application/json"}                    
+                    headers: {"Content-Type": "application/json"}                  
                 })
                 .then(function(response) {
                     return response.json();
@@ -39,7 +105,7 @@
                 .catch(function() {
                     // remove "error" class name so that it is no hidden anymore
                     document.getElementById("error").className="";
-                })
+                });
             }
         </script>
     </body>
