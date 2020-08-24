@@ -13,17 +13,34 @@
         </style>
     </head>
     <body>
+        <h4>Todo Lists</h4>
+        <form id="listForm">
+            <label for="newList">New List:</label>
+            <input type="text" id="newList" name="listName">
+            <input type="submit" value="submit">
+        </form>
+        <ul id="todoLists">
+            {% for l in lists %}
+            <li>
+                <button class="listDelete" data-id="{{ l.id }}">&cross;</button>
+                <input class="listCompleted" data-id="{{ l.id }}" type="checkbox" {% if l.completed %} checked {% endif %} >
+                <a href="/lists/{{l.id}}">{{ l.name }}</a>
+            </li>
+            {% endfor %}
+        </ul>
         <!-- <form id="form" method="post" action="/todo/create">
         post request for traditionall html -->
+        <h4>{{active_list.name}}</h4>
         <form id="form">
             <label for="todo">todo:</label>
+            <input type="hidden" value="{{active_list.id}}" id="listId">
             <input id="todo" type="text" name="description">
-            <input type="submit", value="submit">
+            <input type="submit" value="submit">
         </form>
         <div id="error" class="hidden">Something Wrong!</div>
-        <ul id="todoList">
-            {% for d in data %}
-            <li>
+        <ul id="todoItems">
+            {% for d in todos %}
+            <li>               
                 <!-- add a x button -->
                 <button class="deleted" data-id="{{ d.id }}">&cross;</button>
                 <!--    define a clss "checked" 
@@ -48,7 +65,9 @@
                         return response.json();
                     })
                     .then(function(responseJson) {
-                        alert(responseJson);
+                        if (responseJson["success"]) {
+                            window.location.href = `/lists/${responseJson["list_id"]}`;
+                        }
                         // if (responseJson) {
                         //     window.location.href = "/";
                         // }
@@ -82,14 +101,15 @@
                     })
                 };
             });
-            // Create new todo item
+            // Create a new todo item
             document.getElementById("form").onsubmit = function(e) {
                 // prevent the submit button to submit and refresh the page
                 e.preventDefault();
                 fetch("/todo/create", {
                     method: "POST",
                     body: JSON.stringify({
-                        "description": document.getElementById("todo").value
+                        "description": document.getElementById("todo").value,
+                        "list_id": document.getElementById("listId").value
                     }),
                     headers: {"Content-Type": "application/json"}                  
                 })
@@ -97,14 +117,39 @@
                     return response.json();
                 })
                 .then(function(responseJson) {
-                    console.log(responseJson)
+                    // console.log(responseJson)
                     const liItem = document.createElement("LI");
                     liItem.innerHTML = responseJson["description"];
-                    document.getElementById("todoList").append(liItem);
+                    document.getElementById("todoItems").append(liItem);
+                    window.location.href = `/lists/${responseJson['list_id']}`;
                 })
                 .catch(function() {
                     // remove "error" class name so that it is no hidden anymore
                     document.getElementById("error").className="";
+                });
+            }
+            // Create a new todo list
+            // <form id="listForm">
+            //     <label for="newList">New List:</label>
+            //     <input type="text" id="newList" name="listName">
+            //     <input type="submit" value="submit">
+            // </form>
+            document.getElementById("listForm").onsubmit = function (e) {
+                e.preventDefault() // prevent refreshing
+                fetch("/lists/create", {
+                    method: "POST",
+                    body: JSON.stringify({
+                        "list_name": document.getElementById("newList").value
+                    }),
+                    headers: {"Content-Type": "application/json"}
+                })
+                .then(function(response) {
+                    return response.json();
+                })
+                .then(function(responseJson) {
+                    if (responseJson["success"]) {
+                        window.location.href = `/lists/${responseJson['list_id']}`;
+                    }
                 });
             }
         </script>

@@ -829,6 +829,13 @@ WHERE drivers.name = 'Sarah';
 
 <iframe width="770" height="433" src="https://www.youtube.com/embed/QATpsBELc8s" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
+```python
+todo = db.relationship("Todo", backref="todolist", lazy=True)
+# here the "Todo" is the name of the child class name, not __tablename__	
+```
+
+
+
 #### Lazy loading vs. Eager loading
 
 <iframe width="770" height="433" src="https://www.youtube.com/embed/oq-Wqp_BSps" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
@@ -928,3 +935,116 @@ todoapp=# \q
 ### CRUD on List of To-Dos
 
 <iframe width="770" height="433" src="https://www.youtube.com/embed/Q2JlOnmxVcE" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+Define `get_list_todos` and modify `index`
+
+<iframe width="770" height="433" src="https://www.youtube.com/embed/YzmrghxRC9Y" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+Add items with a list "Urgent" with ID of 2 and check if we get the expected results.
+
+<iframe width="770" height="433" src="https://www.youtube.com/embed/Aav6ZYXrZSs" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+```python
+# python
+Python 3.7.5 (default, Apr 19 2020, 20:18:17) 
+[GCC 9.2.1 20191008] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> from app import db, TodoList, Todo
+>>> urg_list = TodoList(name="urgent")
+>>> todo1 = Todo(descriptiong="urgent todo 1")
+>>> todo1 = Todo(description="urgent todo 1")
+>>> todo2 = Todo(description="urgent todo 2")
+>>> todo1.todolist = urg_list
+>>> todo2.todolist = urg_list
+>>> db.session.add(urg_list)
+>>> db.session.commit()
+>>> todos = Todo.query.all()
+>>> for t in todos:
+...     print(t.id, t.description, t.completed, t.todolist_id)
+... 
+32 todo 1 False 1
+33 urgent todo 1 False 2
+34 urgent todo 2 False 2
+>>> lists = TodoList.query.all()
+>>> for l in lists:
+...     print(l.id, l.name)
+... 
+1 default
+2 urgent
+```
+
+##### Question:
+
+We defined a todo list `urg_list`, and 2 todos `todo1`, `todo2` associated to that list. We only added `urg_list` to our session and committed without `todo1` and `todo2`, these 3 records are added to our database, why don't we need to add `todo1` and `todo2` as well? What happens if we did so?
+
+<iframe width="770" height="433" src="https://www.youtube.com/embed/n_1y418osKo" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+
+
+### Many-To-Many Relationships
+
+#### Types of relationships
+
+<iframe width="770" height="433" src="https://www.youtube.com/embed/AV-gcQWfhQg" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+#### Keys in relationships; association tables
+
+<iframe width="770" height="433" src="https://www.youtube.com/embed/NKDlpXE7F0k" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="770" height="433" src="https://www.youtube.com/embed/Xo_fRKPj2fM" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+To set up a many-to-many in SQLALchemy, we:
+
+- Define an association table using `Table` from SQLAlchemy
+- Set the multiple foreign keys in the association table
+- Map the association table to a parent model using the option `secondary` in `db.relationship`
+
+#### Example with Order, Product, and Order Item
+
+```python
+order_items = db.Table('order_items',
+    db.Column('order_id', db.Integer, db.ForeignKey('order.id'), primary_key=True),
+    db.Column('product_id', db.Integer, db.ForeignKey('product.id'), primary_key=True)
+)
+
+class Order(db.Model):
+  id = db.Column(db.Integer, primary_key=True)
+  status = db.Column(db.String(), nullable=False)
+  products = db.relationship('Product', secondary=order_items,
+      backref=db.backref('orders', lazy=True))
+
+class Product(db.Model):
+  id = db.Column(db.Integer, primary_key=True)
+  name = db.Column(db.String(), nullable=False)
+```
+
+#### Looking at it in the code
+
+<iframe width="770" height="433" src="https://www.youtube.com/embed/17FW9tAaDvA" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+##### Example app.py
+
+```python
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://udacitystudios@localhost:5432/example'
+db = SQLAlchemy(app)
+
+order_items = db.Table('order_items',
+    db.Column('order_id', db.Integer, db.ForeignKey('order.id'), primary_key=True),
+    db.Column('product_id', db.Integer, db.ForeignKey('product.id'), primary_key=True)
+)
+
+class Order(db.Model):
+  id = db.Column(db.Integer, primary_key=True)
+  status = db.Column(db.String(), nullable=False)
+  products = db.relationship('Product', secondary=order_items,
+      backref=db.backref('orders', lazy=True))
+
+class Product(db.Model):
+  id = db.Column(db.Integer, primary_key=True)
+  name = db.Column(db.String(), nullable=False)
+```
+
