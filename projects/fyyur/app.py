@@ -31,12 +31,21 @@ db = SQLAlchemy(app)
 # Models.
 #----------------------------------------------------------------------------#
 
-shows = db.Table(
-  "shows",
-  db.Column("artist_id", db.Integer, db.ForeignKey("artist.id"), primary_key=True),
-  db.Column("venue_id", db.Integer, db.ForeignKey("venue.id"), primary_key=True),
-  db.Column("date", db.DateTime, nullable=False, default=datetime.utcnow)
-)
+class Show(db.Model):
+    __tablename__ = "show"
+
+    id = db.Column(db.Integer, primary_key=True)
+    artist_id = db.Column(db.Integer, db.ForeignKey("artist.id"), nullable=False)
+    venue_id = db.Column(db.Integer, db.ForeignKey("venue.id"), nullable=False)
+    date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
+# shows = db.Table(
+#   "shows",
+#   db.Column("artist_id", db.Integer, db.ForeignKey("artist.id"), primary_key=True),
+#   db.Column("venue_id", db.Integer, db.ForeignKey("venue.id"), primary_key=True),
+#   db.Column("date", db.DateTime, nullable=False, default=datetime.utcnow)
+# )
+
 
 class Venue(db.Model):
     __tablename__ = 'venue'
@@ -50,13 +59,16 @@ class Venue(db.Model):
     image_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String, nullable=False, default="www.facebook.com/v")
 
-    artists = db.relationship(
-      "Airtist",
-      secondary=shows,
+    shows = db.relationship(
+      "Show",
       backref=db.backref("venues", lazy=True)
     )
 
+    def __repr__(self):
+        return f'<Venue {self.id} name: {self.name}>'
+
     # TODO: implement any missing fields, as a database migration using Flask-Migrate
+
 
 class Artist(db.Model):
     __tablename__ = 'artist'
@@ -70,6 +82,11 @@ class Artist(db.Model):
     image_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String, nullable=False, default="www.facebook.com/a")
 
+    shows = db.relationship(
+      "Show",
+      backref=db.backref("artists", lazy=True)
+    )
+
     # TODO: implement any missing fields, as a database migration using Flask-Migrate
 
 migration = Migrate(app, db)
@@ -81,12 +98,12 @@ migration = Migrate(app, db)
 #----------------------------------------------------------------------------#
 
 def format_datetime(value, format='medium'):
-  date = dateutil.parser.parse(value)
-  if format == 'full':
-      format="EEEE MMMM, d, y 'at' h:mma"
-  elif format == 'medium':
-      format="EE MM, dd, y h:mma"
-  return babel.dates.format_datetime(date, format)
+    date = dateutil.parser.parse(value)
+    if format == 'full':
+        format="EEEE MMMM, d, y 'at' h:mma"
+    elif format == 'medium':
+        format="EE MM, dd, y h:mma"
+    return babel.dates.format_datetime(date, format)
 
 app.jinja_env.filters['datetime'] = format_datetime
 
@@ -106,28 +123,34 @@ def index():
 def venues():
   # TODO: replace with real venues data.
   #       num_shows should be aggregated based on number of upcoming shows per venue.
-  data=[{
-    "city": "San Francisco",
-    "state": "CA",
-    "venues": [{
-      "id": 1,
-      "name": "The Musical Hop",
-      "num_upcoming_shows": 0,
-    }, {
-      "id": 3,
-      "name": "Park Square Live Music & Coffee",
-      "num_upcoming_shows": 1,
-    }]
-  }, {
-    "city": "New York",
-    "state": "NY",
-    "venues": [{
-      "id": 2,
-      "name": "The Dueling Pianos Bar",
-      "num_upcoming_shows": 0,
-    }]
-  }]
-  return render_template('pages/venues.html', areas=data);
+  
+  data = []
+  venues = Venue.query.all()
+  cities = set([(v.city, v.state) for v in venues])
+
+  for c in cities:
+    data.append({
+      "city": c[0],
+      "state": c[1],
+      "venues": []
+    })    
+
+  now = datetime.now()
+  for v in venues:
+    n_upcoming_shows = 0
+    shows = Show.query.filter_by(venue_id=v.id).all()
+    for s in shows:
+      if s.date > now:
+        n_upcoming_shows += 1
+    for venue in data:
+      if v.city == venue["city"]:
+        venue["venues"].append({
+          "id": v.id,
+          "name": v.name,
+          "num_upcoming_shows": n_upcoming_shows
+        })
+
+  return render_template('pages/venues.html', areas=data)
 
 @app.route('/venues/search', methods=['POST'])
 def search_venues():
