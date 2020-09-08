@@ -62,7 +62,7 @@ class Venue(db.Model):
                         default="1000 University Dr")
     phone = db.Column(db.String, nullable=False, default="2480001234")
     image_link = db.Column(db.String)
-    genres = db.Column(db.String, nullable=False, default="Hip Hop")
+    genres = db.Column(db.ARRAY(db.String()), nullable=False, default="Hip Hop")
     facebook_link = db.Column(
         db.String, nullable=False, default="www.facebook.com/v")
     website = db.Column(db.String, nullable=False, default="www.website.com")

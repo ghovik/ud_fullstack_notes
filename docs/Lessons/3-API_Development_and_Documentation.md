@@ -59,7 +59,7 @@ Here's a short summary of the REST principles:
 
 <iframe width="770" height="433" src="https://www.youtube.com/embed/rtYY2NvDMWE" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-#### Features:
+#### Features
 
 - **Connectionless:** When a request is sent, the client opens the connection; once a response is received, the client closes the connection. The client and server only maintain a connection during the response and request. Future responses are made on a new connection.
 - **Stateless:** There is no dependency between successive requests.
@@ -68,7 +68,7 @@ Here's a short summary of the REST principles:
 
 
 
-#### Elements:
+#### Elements
 
 - Universal Resource Identifiers (URIs):
 
@@ -83,4 +83,18 @@ Here's a short summary of the REST principles:
   - **Scheme:** specifies the protocol used to access the resource, HTTP or HTTPS. In our example `http`.
   - **Host:** specifies the host that holds the resources. In our example `www.example.com`.
   - **Path:** specifies the specific resource being requested. In our example, `/tasks`.
-  - **Query:** an optional component, the query string provides information the resource can use for some purpose such as a search parameter. In our example, `/term=homework`.
+  - **Query:** an optional component, the query string provides information the resource can use for some purpose such as a search parameter. In our example, `/term=homework`.git status
+
+### HTTP Requests
+
+<iframe width="770" height="433" src="https://www.youtube.com/embed/5EUHUzia0bw" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+#### HTTP request methods
+
+<iframe width="770" height="433" src="https://www.youtube.com/embed/zuUwIf90dmU" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+### HTTP Responses
+
+<iframe width="770" height="433" src="https://www.youtube.com/embed/sfDwGi8CF4Q" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+### Creating a basic Flask application
