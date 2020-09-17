@@ -147,3 +147,28 @@ If the signature strings match, we can trust that the data within the JWT is aut
 - [JWT.io](https://jwt.io/introduction/) a useful guide and list of popular JSON Web Token implementations.
 - [Base64 Encoding](https://en.wikipedia.org/wiki/Base64)
 - [HMAC](https://en.wikipedia.org/wiki/HMAC) keyed-hash message authentication code
+
+### Storing Tokens in Web Browsers
+
+<iframe width="770" height="433" src="https://www.youtube.com/embed/uOBGbP8B1yQ" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+### Storing JWTs
+
+<iframe width="770" height="433" src="https://www.youtube.com/embed/WbDEQK3orJ0" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+```javascript
+localStorage.getItem("token");
+```
+
+#### Security Considerations of Local Storage
+
+<iframe width="770" height="433" src="https://www.youtube.com/embed/HANOhvWxXTI" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+#### How Cross-Site Scripting Attacks (XSS) are Performed and Mitigated Techniques
+
+<iframe width="770" height="433" src="https://www.youtube.com/embed/dL-Wc0ZEcIQ" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+### Sending Tokens with Requests
+
+<iframe width="770" height="433" src="https://www.youtube.com/embed/kbBdD73lYTE" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
